@@ -1,8 +1,17 @@
 import { useAuth0 } from "@auth0/auth0-react";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./tourly.css";
 
 function App() {
-  const { loginWithRedirect } = useAuth0();
+  const { loginWithRedirect, isAuthenticated, isLoading } = useAuth0();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      navigate("/profile");
+    }
+  }, [isAuthenticated, isLoading, navigate]);
 
   return (
     <>
@@ -10,12 +19,14 @@ function App() {
       <header className="header" data-header>
         <div className="container">
           <a href="#" className="logo">
-            <img src="/assets/images/logo.png" alt="Cruise0 Logo"
-  style={{
-    width: "80px",      
-    height: "auto",       
-  }}
-/>
+            <img
+              src="/assets/images/logo.png"
+              alt="Cruise0 Logo"
+              style={{
+                width: "80px",
+                height: "auto",
+              }}
+            />
           </a>
 
           <nav className="navbar" data-navbar>
@@ -44,7 +55,7 @@ function App() {
               Discover unforgettable destinations and unparalleled comfort. Book your voyage today.
             </p>
 
-            {/*Only Functional Button */}
+            {/* Only Functional Button */}
             <button className="btn btn-primary" onClick={() => loginWithRedirect()}>
               Log In to Book
             </button>
@@ -62,7 +73,6 @@ function App() {
         </div>
       </section>
 
-      
       {/* ===== Footer (Visual Only) ===== */}
       <footer className="footer" id="contact">
         <div className="container">

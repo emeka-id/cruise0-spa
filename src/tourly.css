@@ -375,7 +375,7 @@ body { background: var(--white); }
 \*-----------------------------------*/
 
 .hero {
-  background-image: url("/assets/images/hero-banner.jpg");
+  background-image: url("/assets/images/bg.jpg");
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
@@ -1264,6 +1264,49 @@ address {
 }
 
 
+/** Profile */
+input.input, select.input {
+  padding: 0.6rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.profile-bg-wrapper {
+  position: relative;
+  min-height: 100vh;
+  background: url("/assets/images/profile-bg.jpg") no-repeat center center/cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 47, 95, 0.7); /* transparent blue */
+  z-index: 0;
+}
+
+.profile-content {
+  position: relative;
+  z-index: 1;
+  padding: 3rem 2rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(6px);
+  border-radius: 1rem;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.input {
+  padding: 0.6rem;
+  border-radius: 6px;
+  width: 100%;
+  font-size: 1rem;
+  border: none;
+}
 
 
 
