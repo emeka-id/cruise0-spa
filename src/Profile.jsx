@@ -1,33 +1,45 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "./tourly.css";
 
 export default function Profile() {
-  const { user, logout } = useAuth0();
+  // Auth0 hook to access the current user and logout
+  const { user, isAuthenticated, isLoading, loginWithRedirect, logout } = useAuth0();
+
+  // Local state for cruise search form
   const [startDate, setStartDate] = useState(new Date());
   const [destination, setDestination] = useState("");
 
+  // React Router hooks for redirect and query param inspection
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // This effect checks if the email verification redirect has occurred
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const success = params.get("success");
+
+    // If success is true and the user is not yet authenticated, trigger login
+    if (success && !isAuthenticated && !isLoading) {
+      loginWithRedirect();
+    }
+
+    // Clean the URL once it's been handled
+    if (success) {
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location, isAuthenticated, isLoading, loginWithRedirect, navigate]);
+
+  // If the user is not yet authenticated or user data is loading, show placeholder
+  if (!isAuthenticated || !user) return <p style={{ textAlign: "center", color: "#fff" }}>Loading profile...</p>;
+
+  // Handles the search form submission with a mock alert
   const handleSearch = (e) => {
     e.preventDefault();
     alert(`Searching cruises to ${destination} departing on ${startDate.toDateString()}`);
-  };
-
-  const handleLinkAccount = () => {
-    localStorage.setItem("primaryUserId", user.sub);
-
-    const domain = import.meta.env.VITE_AUTH0_DOMAIN;
-    const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
-
-    const linkUrl = `https://${domain}/authorize?` +
-      `client_id=${clientId}` +
-      `&response_type=code` +
-      `&scope=openid profile email` +
-      `&redirect_uri=${window.location.origin}/link-callback` +
-      `&prompt=login`;
-
-    window.location.href = linkUrl;
   };
 
   return (
@@ -35,6 +47,7 @@ export default function Profile() {
       <div className="overlay"></div>
 
       <div className="container profile-content">
+        {/* User Info Section */}
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
           <img
             src={user.picture}
@@ -44,23 +57,25 @@ export default function Profile() {
           <h2 style={{ color: "white" }}>{user.name}</h2>
           <p style={{ color: "white", marginBottom: "1rem" }}>{user.email}</p>
 
-          <div style={{ display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
+          {/* Logout Button Only */}
+          <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap" }}>
             <button
               className="btn btn-primary"
-              onClick={() => logout({ returnTo: window.location.origin })}
+              onClick={() => {
+                logout({ returnTo: window.location.origin });
+                localStorage.removeItem("primaryUserId"); // clean up if any was set
+              }}
             >
               Log Out
-            </button>
-
-            <button className="btn btn-secondary" onClick={handleLinkAccount}>
-              Link Another Account
             </button>
           </div>
         </div>
 
+        {/* Cruise Search Form */}
         <div className="booking-box">
           <h3 style={{ marginBottom: "1.5rem" }}>Find Your Next Cruise</h3>
           <form onSubmit={handleSearch}>
+            {/* Date Picker */}
             <div className="form-group" style={{ marginBottom: "1.2rem" }}>
               <label style={{ display: "block", marginBottom: "0.5rem", color: "white" }}>
                 Departure Date:
@@ -72,6 +87,7 @@ export default function Profile() {
               />
             </div>
 
+            {/* Destination Dropdown */}
             <div className="form-group" style={{ marginBottom: "1.2rem" }}>
               <label style={{ display: "block", marginBottom: "0.5rem", color: "white" }}>
                 Destination:
@@ -90,6 +106,7 @@ export default function Profile() {
               </select>
             </div>
 
+            {/* Submit Button */}
             <button type="submit" className="btn btn-primary" style={{ width: "100%" }}>
               Search Cruises
             </button>
