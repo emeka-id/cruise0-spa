@@ -9,12 +9,14 @@ function App() {
   const [authError, setAuthError] = useState(null);
   const navigate = useNavigate();
 
+  // 1. Redirects to profile page if authenticated
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
       navigate("/profile");
     }
   }, [isAuthenticated, isLoading, navigate]);
 
+  // 2. Handle auth0 error messages in URL (e.g. "email not verified")
   useEffect(() => {
     const error = searchParams.get("error");
     const description = searchParams.get("error_description");
@@ -24,6 +26,7 @@ function App() {
     }
   }, [searchParams]);
 
+  // 3. Clear any displayed error message after 5 seconds
   useEffect(() => {
     if (authError) {
       const timer = setTimeout(() => setAuthError(null), 5000);
@@ -31,23 +34,36 @@ function App() {
     }
   }, [authError]);
 
-  const handleLogin = () => {
-    const primaryUserId = localStorage.getItem("primaryUserId");
-    const loginOptions = {
-      redirectUri: window.location.origin,
-    };
+  // 4. After email verification, force login again if not authenticated
+  useEffect(() => {
+    const success = searchParams.get("success");
+    const message = searchParams.get("message");
 
-    if (primaryUserId) {
-      loginOptions.appState = {
-        primary_user_id: primaryUserId,
-      };
+    if (!isAuthenticated && success === "true" && message?.includes("verified")) {
+      loginWithRedirect();
     }
+  }, [isAuthenticated, searchParams, loginWithRedirect]);
 
-    loginWithRedirect(loginOptions);
+  // 5. Clean up the query string from the URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("success") || params.has("message")) {
+      const url = new URL(window.location);
+      url.search = ""; // remove all query params
+      window.history.replaceState({}, document.title, url.pathname);
+    }
+  }, []);
+
+  // Correct login function (triggered by button only)
+  const handleLogin = () => {
+    loginWithRedirect({
+      redirectUri: window.location.origin,
+    });
   };
 
   return (
     <>
+      {/* Show Auth Error Banner if Present */}
       {authError && (
         <div className="auth-error-banner" style={{
           background: "#ffe5e5",
@@ -61,7 +77,7 @@ function App() {
           maxWidth: "600px",
           fontWeight: "bold"
         }}>
-          ⚠️ {authError}
+          {authError}
         </div>
       )}
 
@@ -101,6 +117,7 @@ function App() {
               Discover unforgettable destinations and unparalleled comfort. Book your voyage today.
             </p>
 
+            {/* Only Trigger Login on Click */}
             <button className="btn btn-primary" onClick={handleLogin}>
               Log In to Book
             </button>
