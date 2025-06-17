@@ -11,9 +11,14 @@ function LinkCallback() {
       const params = new URLSearchParams(window.location.search);
       const state = params.get("state");
 
-      // Redirect again with primary_user_id
-      window.location.href = `https://YOUR_DOMAIN/continue?state=${state}&primary_user_id=${primaryUserId}`;
+      // Clean up: remove from localStorage to avoid leaking into normal login
+      localStorage.removeItem("primaryUserId");
+
+      // Redirect to Auth0 /continue endpoint with primary user ID
+      const domain = import.meta.env.VITE_AUTH0_DOMAIN;
+      window.location.href = `https://${domain}/continue?state=${state}&primary_user_id=${primaryUserId}`;
     } else {
+      // If no ID is stored, return user to home
       navigate("/");
     }
   }, [navigate]);
