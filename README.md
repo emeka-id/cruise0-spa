@@ -1,12 +1,43 @@
-# React + Vite
+# Cruise0 SPA
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Cruise0 is a Single Page Application (SPA) built with React to allow users to book cruise destinations. It features Auth0 authentication (social and username/password), email verification, and profile-based booking functionality.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- React SPA with Auth0 authentication
+- Social login (Google) and email/password sign-up
+- Email verification with auto-login after confirmation
+- Profile page with cruise search functionality
+- Fully responsive landing page UI
+- Logout and reauthentication support
 
-## Expanding the ESLint configuration
+## Technologies Used
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- React
+- Auth0 React SDK
+- React Router DOM
+- React DatePicker
+- Vite
+- Tailored CSS styles (tourly.css)
+
+## Auth0 Setup
+
+To configure Auth0 for the app:
+
+1. Create an Auth0 application (Single Page Application).
+2. Add the following to your application settings:
+   - **Allowed Callback URLs**: `http://localhost:3000`
+   - **Allowed Logout URLs**: `http://localhost:3000`
+   - **Allowed Web Origins**: `http://localhost:3000`
+3. Enable social login (e.g., Google).
+4. Enable email verification in Auth0 dashboard.
+5. Set up a [Post-Registration Action](https://auth0.com/docs/customize/actions/flows-and-triggers/post-user-registration-flow) to send verification emails.
+
+## Environment Variables
+
+Create a `.env` file in the root directory:
+
+```env
+VITE_AUTH0_DOMAIN=your-auth0-domain.auth0.com
+VITE_AUTH0_CLIENT_ID=your-auth0-client-id
+VITE_AUTH0_CALLBACK_URL=http://localhost:3000
