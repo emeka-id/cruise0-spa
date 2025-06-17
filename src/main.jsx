@@ -16,10 +16,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     authorizationParams={{ redirect_uri: redirectUri }}
   >
     <Router>
-      <Routes>
-        <Route path="/" element={<App />} />
-        <Route path="/profile" element={<Profile />} />
-      </Routes>
+<Routes>
+  <Route path="/" element={<App />} />
+  <Route path="/profile" element={<Profile />} />
+</Routes>
     </Router>
   </Auth0Provider>
 );
